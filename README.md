@@ -1,92 +1,62 @@
 # pyLattice2D
 
+`pyLattice2D` is a Python package based on PyTorch and DGL (Deep Graph Library) for generating 2D lattices, performing finite element analysis (more specifically, direct stiffness with generalized Euler Bernoulli beams) and inverse designing 2D lattice materials. It features a differentiable graph-based model of lattices that allows the usage of automatic differentiation to change a lattice's geometry and material properties (e.g., remove or add beams).
 
+This package was created as part of the publication "Differentiable graph-structured models for inverse design of lattice materials". An introduction to its structure is provided in the publication's supplementary information.
 
-## Getting started
+## Code
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### Installation
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+To use our code, install the provided package pyLattice2D via pip
+```
+pip install -e .
+```
+from the folder containing the `setup.py`. 
+The source code is located in `pyLattice2D/`. 
 
-## Add your files
+### Examples
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+Example notebooks replicating some of the experiments shown in the publication can be found in `Examples/`. 
+
+### Features
+
+Included methods for generating (and perturbing, i.e., by moving/removing nodes, adding/removing beams) base tilings:
+- square
+- (equilat.) triangle
+- honeycomb
+- reentrant honeycomb
+- Kagome
+- Voronoi (with different degrees of disorder)
+
+The direct stiffness method allows:
+- calculation of deformations to general loads (iteratively)
+- measurement of effective elastic modulus
+- measurement of Poisson's ratio
+
+The code also includes graph neural network models as well as tabular models (trainable on tabular features characterizing a lattice material) and a convolutional neural network (trainable on images of lattices) to predict material properties.
+
+To enable using gradient descent for adding/removing beams during inverse design, we add masking values for each beam. A beam is realized in the material if the masking value is larger than 0 (i.e., the masks are thresholded at 0). To improve training speed, a method called `Surrogate Gradient` is used when calculating gradients through this threshold function.
+
+The implemented direct stiffness method and the graph neural networks are based on message passing, and hence allow inverse design via automatic differentiation on features of the input lattice (beam existence, beam cross-area, beam stiffness, node positions, etc.). In principle, this enables the inverse design of completely heterogeneous lattice structures to discover materials that possess certain desired properties.
+
+## Abstract of the accompanying publication
+
+Materials possessing flexible physico-chemical properties that adapt on-demand to the hostile environmental conditions of deep space will become essential in defining the future of space exploration. A promising venue for inspiration towards the design of environment-specific materials is in the intricate micro-architectures and lattice geometry found throughout nature. However, the immense design space covered by such irregular topologies is challenging to probe analytically. For this reason, most synthetic lattice materials have to date been based on periodic architectures instead. Here, we propose a computational approach using a graph representation for both regular and irregular lattice materials. Our method uses differentiable message passing algorithms to calculate mechanical properties, and therefore allows using automatic differentiation to adjust both the geometric structure and attributes of individual lattice elements to design materials with desired properties. The introduced methodology is applicable to any system representable as a heterogeneous graph, including other types of materials.
+
+## Citation
+
+If you use the provided code or find it helpful for your own work, please cite
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/EuropeanSpaceAgency/pylattice2d.git
-git branch -M main
-git push -uf origin main
+@article{dold2023differentiable,
+  title={Differentiable graph-structured models for inverse design of lattice materials},
+  author={Dold, Dominik and Aranguren Van Egmond, Derek},
+  journal={},
+  volume={},
+  number={},
+  pages={},
+  year={2023},
+  publisher={}
+}
 ```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.com/EuropeanSpaceAgency/pylattice2d/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
